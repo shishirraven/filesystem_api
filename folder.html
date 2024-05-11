@@ -20,6 +20,7 @@
 
 <button onclick="authorizeFolder()">Authorize Folder</button>
 <button onclick="createFile()">Create File</button>
+<button onclick="createSubfolder()">Create Subfolder and File</button>
 <textarea id="editor" placeholder="Write your content here"></textarea>
 
 <script>
@@ -28,8 +29,7 @@
     async function authorizeFolder() {
         try {
             const options = {
-                writable: true,
-                mode: 'open-directory'
+                writable: true
             };
             [folderHandle] = await window.showDirectoryPicker(options);
             console.log("Folder authorized:", folderHandle);
@@ -55,6 +55,29 @@
             alert(`File "${fileName}" created successfully!`);
         } catch (err) {
             console.error('Error creating file:', err);
+        }
+    }
+
+    async function createSubfolder() {
+        if (!folderHandle) {
+            console.error('Please authorize a folder first.');
+            return;
+        }
+        const subfolderName = prompt('Enter subfolder name:');
+        if (!subfolderName) return;
+        const fileName = prompt('Enter file name:');
+        if (!fileName) return;
+
+        try {
+            const subfolderHandle = await folderHandle.getDirectoryHandle(subfolderName, { create: true });
+            const fileHandle = await subfolderHandle.getFileHandle(fileName, { create: true });
+            const content = document.getElementById('editor').value;
+            const writable = await fileHandle.createWritable();
+            await writable.write(content);
+            await writable.close();
+            alert(`File "${fileName}" created successfully in subfolder "${subfolderName}"!`);
+        } catch (err) {
+            console.error('Error creating subfolder and file:', err);
         }
     }
 </script>
