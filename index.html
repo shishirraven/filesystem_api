@@ -19,14 +19,16 @@
 <h2>File Editor</h2>
 
 <textarea id="editor"></textarea>
+<button onclick="openFilePicker()">Open File</button>
 <button onclick="saveFile()">Save</button>
 
 <script>
     let fileHandle;
 
-    async function init() {
+    async function openFilePicker() {
         try {
-            [fileHandle] = await window.showOpenFilePicker();
+            const [fileHandleObj] = await window.showOpenFilePicker();
+            fileHandle = fileHandleObj;
             const file = await fileHandle.getFile();
             const contents = await file.text();
             document.getElementById('editor').value = contents;
@@ -36,6 +38,10 @@
     }
 
     async function saveFile() {
+        if (!fileHandle) {
+            console.error('No file selected.');
+            return;
+        }
         const content = document.getElementById('editor').value;
         try {
             const writable = await fileHandle.createWritable();
@@ -46,8 +52,6 @@
             console.error('Error saving file:', err);
         }
     }
-
-    window.onload = init;
 </script>
 
 </body>
