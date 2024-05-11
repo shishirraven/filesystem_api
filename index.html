@@ -1,0 +1,54 @@
+v<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>File Editor</title>
+<style>
+    body {
+        font-family: Arial, sans-serif;
+        margin: 20px;
+    }
+    textarea {
+        width: 100%;
+        height: 300px;
+    }
+</style>
+</head>
+<body>
+<h2>File Editor</h2>
+
+<textarea id="editor"></textarea>
+<button onclick="saveFile()">Save</button>
+
+<script>
+    let fileHandle;
+
+    async function init() {
+        try {
+            [fileHandle] = await window.showOpenFilePicker();
+            const file = await fileHandle.getFile();
+            const contents = await file.text();
+            document.getElementById('editor').value = contents;
+        } catch (err) {
+            console.error('Error opening file:', err);
+        }
+    }
+
+    async function saveFile() {
+        const content = document.getElementById('editor').value;
+        try {
+            const writable = await fileHandle.createWritable();
+            await writable.write(content);
+            await writable.close();
+            alert('File saved successfully!');
+        } catch (err) {
+            console.error('Error saving file:', err);
+        }
+    }
+
+    window.onload = init;
+</script>
+
+</body>
+</html>
