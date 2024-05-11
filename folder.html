@@ -31,7 +31,7 @@
             const options = {
                 writable: true
             };
-            [folderHandle] = await window.showDirectoryPicker(options);
+            folderHandle = await window.showDirectoryPicker(options);
             console.log("Folder authorized:", folderHandle);
         } catch (err) {
             console.error('Error authorizing folder:', err);
