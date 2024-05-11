@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>File Writer</title>
+<style>
+    body {
+        font-family: Arial, sans-serif;
+        margin: 20px;
+    }
+    textarea {
+        width: 100%;
+        height: 300px;
+    }
+</style>
+</head>
+<body>
+<h2>File Writer</h2>
+
+<button onclick="authorizeFolder()">Authorize Folder</button>
+<button onclick="createFile()">Create File</button>
+<textarea id="editor" placeholder="Write your content here"></textarea>
+
+<script>
+    let folderHandle;
+
+    async function authorizeFolder() {
+        try {
+            const options = {
+                writable: true,
+                mode: 'open-directory'
+            };
+            [folderHandle] = await window.showDirectoryPicker(options);
+            console.log("Folder authorized:", folderHandle);
+        } catch (err) {
+            console.error('Error authorizing folder:', err);
+        }
+    }
+
+    async function createFile() {
+        if (!folderHandle) {
+            console.error('Please authorize a folder first.');
+            return;
+        }
+        const fileName = prompt('Enter file name:');
+        if (!fileName) return;
+
+        try {
+            const fileHandle = await folderHandle.getFileHandle(fileName, { create: true });
+            const content = document.getElementById('editor').value;
+            const writable = await fileHandle.createWritable();
+            await writable.write(content);
+            await writable.close();
+            alert(`File "${fileName}" created successfully!`);
+        } catch (err) {
+            console.error('Error creating file:', err);
+        }
+    }
+</script>
+
+</body>
+</html>
