@@ -63,13 +63,16 @@
             console.error('Please authorize a folder first.');
             return;
         }
+
         const subfolderName = prompt('Enter subfolder name:');
         if (!subfolderName) return;
-        const fileName = prompt('Enter file name:');
-        if (!fileName) return;
 
         try {
             const subfolderHandle = await folderHandle.getDirectoryHandle(subfolderName, { create: true });
+
+            const fileName = prompt('Enter file name:');
+            if (!fileName) return;
+
             const fileHandle = await subfolderHandle.getFileHandle(fileName, { create: true });
             const content = document.getElementById('editor').value;
             const writable = await fileHandle.createWritable();
